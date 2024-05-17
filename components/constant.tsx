@@ -20,6 +20,12 @@ export const NavConstant: INav[] = [
 		text: "Archives",
 		path: "/dashboard/archives",
 		icon: <CloudUpload size={20} color="#4d4d4d" />
+	},
+	{
+		id: 4,
+		text: "Profile",
+		path: "/dashboard/profile",
+		icon: <CloudUpload size={20} color="#4d4d4d" />
 	}
 ];
 

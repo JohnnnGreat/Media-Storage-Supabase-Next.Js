@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useGetAllUserUploadedFiles } from "@/utils/tanstack/tanstackQueries";
 import { LoaderCircle } from "lucide-react";
+import { formatFileSize } from "@/utils/shared";
 
 dayjs.extend(utc);
 const DashboardHome = () => {
@@ -49,16 +50,6 @@ const DashboardHome = () => {
 		}
 	};
 
-	const formatFileSize = (size: number) => {
-		const units = ["B", "KB", "MB", "GB", "TB"];
-		let i = 0;
-		while (size >= 1024 && i < units.length - 1) {
-			size /= 1024;
-			i++;
-		}
-		return `${size.toFixed(2)} ${units[i]}`;
-	};
-
 	const formatDate = (dateString: string) => {
 		const date = dayjs(dateString).utc();
 		return date.format("MMM D, YYYY - h:mm:ss A");
@@ -95,7 +86,7 @@ const DashboardHome = () => {
 						</TabsList>
 						<TabsContent className="w-full" value="all">
 							<div className="flex flex-wrap items-center  gap-[1rem]">
-								{userFiles?.data?.map((file: { url: string; file_name: string; created_at: string; extension: string }) => {
+								{userFiles?.data?.map((file: { size: number; url: string; file_name: string; created_at: string; extension: string }) => {
 									return (
 										<div className="w-[300px]  p-[.6rem] border border-[1px] border-gray-300 rounded-lg">
 											{file?.extension === "mp3" && (
@@ -131,9 +122,9 @@ const DashboardHome = () => {
 						</TabsContent>
 						<TabsContent value="videos">
 							<div className="flex flex-wrap items-center gap-[1rem]">
-								{videos.map((file: { url: string; file_name: string; created_at: string; extension: string }) => {
+								{videos.map((file: { size: number; url: string; file_name: string; created_at: string; extension: string }) => {
 									return (
-										<div className="w-[300px]  p-[.6rem] border border-[1px] border-gray-300 rounded-lg">
+										<div className="w-[300px]  p-[.6rem] border  border-gray-300 rounded-lg">
 											{file?.extension === "mp4" && (
 												<video className="w-full h-[200px]" controls>
 													<source src={file?.url} type="video/mp4" />
