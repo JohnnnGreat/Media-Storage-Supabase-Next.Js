@@ -72,6 +72,12 @@
 	grid-template-columns: 20% 80%;
 }
 
+@media (max-width: 640px) {
+	.grid {
+		grid-template-columns: 1fr;
+	}
+}
+
 .bg-nav-dialog {
 	position: absolute;
 	top: 0;
@@ -113,4 +119,8 @@
 	.bg-nav {
 		@apply bg-nav-dialog;
 	}
+}
+
+.uppy-Dashboard-poweredBy {
+	display: none !important;
 }

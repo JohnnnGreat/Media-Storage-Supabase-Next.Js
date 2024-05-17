@@ -25,3 +25,19 @@ export type ToastType = {
 	description?: string;
 	variant?: string;
 };
+
+export type IVerifyToken = {
+	email: string;
+	token: string;
+};
+
+export type INewFile = {
+	postedBy?: string;
+	fileUrl?: string;
+	last_modified?: string;
+	fileName?: string;
+	type?: string;
+	preview?: string;
+	size?: Number;
+	extension?: string;
+};

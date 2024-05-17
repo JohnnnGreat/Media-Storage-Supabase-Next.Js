@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -6,7 +7,7 @@ import { descriptionSchema } from "@/utils/schema/schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/button";
-import { FolderUp, LucideSidebarClose, ShieldClose, SidebarClose, UploadCloud } from "lucide-react";
+import { X, LucideSidebarClose, ShieldClose, SidebarClose, UploadCloud, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { createClient } from "@/utils/supabase/client";
 import * as tus from "tus-js-client";
@@ -15,8 +16,14 @@ import { Dashboard } from "@uppy/react";
 import Tus from "@uppy/tus";
 import "@uppy/core/dist/style.min.css";
 import "@uppy/dashboard/dist/style.min.css";
+import { TusConfigs } from "@/lib/tusConfigs";
+import { useCreateNewFiles } from "@/utils/tanstack/tanstackQueries";
+import { customToastNotifier } from "@/utils/shared";
+import { useToast } from "../ui/use-toast";
 
-const Upload = () => {
+const Upload = (props: any) => {
+	const { openUpload } = props;
+	const { toast } = useToast();
 	const form = useForm<z.infer<typeof descriptionSchema>>({
 		resolver: zodResolver(descriptionSchema),
 		defaultValues: {
@@ -29,7 +36,9 @@ const Upload = () => {
 	const fileInputRef = useRef(null);
 	const [uploadResult, setUploadResult] = useState([]);
 
-	const handleDragOver = (e) => {
+	const { mutateAsync: addNewFilesToDb, isPending: isLoading, isError } = useCreateNewFiles();
+
+	const handleDragOver = (e: any) => {
 		e.preventDefault();
 		setIsDragOver(true);
 	};
@@ -38,7 +47,7 @@ const Upload = () => {
 		setIsDragOver(false);
 	};
 
-	const handleDrop = (e) => {
+	const handleDrop = (e: any) => {
 		e.preventDefault();
 		setIsDragOver(false);
 		handleFiles(e.dataTransfer.files);
@@ -84,23 +93,13 @@ const Upload = () => {
 
 	var uppy = new Uppy();
 
-	const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhdnJqaXV5aGdncGN6Ym16Y3ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTUyNjQ5NzMsImV4cCI6MjAzMDg0MDk3M30.TxDvlFDxy6ReMMUqe-IHQI5gAJ3ogi3EypE0wX-XGaw";
-	const projectId = "iavrjiuyhggpczbmzczi";
+	// // const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhdnJqaXV5aGdncGN6Ym16Y3ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTUyNjQ5NzMsImV4cCI6MjAzMDg0MDk3M30.TxDvlFDxy6ReMMUqe-IHQI5gAJ3ogi3EypE0wX-XGaw";
+	// const projectId = "iavrjiuyhggpczbmzczi";
 	const bucketName = "files";
 	const folderName = "Random";
-	const supabaseUploadURL = `https://${projectId}.supabase.co/storage/v1/upload/resumable`;
+	// const supabaseUploadURL = `https://${projectId}.supabase.co/storage/v1/upload/resumable`;
 
-	uppy.use(Tus, {
-		endpoint: supabaseUploadURL,
-		headers: {
-			authorization: `Bearer ${token}`,
-			apikey: token
-		},
-		uploadDataDuringCreation: true,
-		chunkSize: 6 * 1024 * 1024,
-		allowedMetaFields: ["bucketName", "objectName", "contentType", "cacheControl"]
-	});
-
+	uppy.use(Tus, TusConfigs);
 	uppy.on("file-added", (file) => {
 		const fileName = `${Date.now()}`;
 		file.meta = {
@@ -112,14 +111,13 @@ const Upload = () => {
 	});
 
 	uppy.on("complete", (result: any) => {
+		setUploadResult([]);
 		try {
 			console.log("Upload complete! We've uploaded these files:", result.successful);
 
-			result.successful.map((file) => {
-				console.log(file);
-				const fileUrl = `https://${projectId}.supabase.co/storage/v1/object/public/files/${file?.meta?.objectName}`;
+			result.successful.map((file: any) => {
+				const fileUrl = `https://${process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ID as string}.supabase.co/storage/v1/object/public/files/${file?.meta?.objectName}`;
 				const fileDetails = { ...file, url: fileUrl };
-
 				setUploadResult([...uploadResult, fileDetails]);
 			});
 		} catch (error) {
@@ -127,13 +125,9 @@ const Upload = () => {
 		}
 	});
 
-	async function onSubmit(values: z.infer<typeof descriptionSchema>) {
-		console.log(userData);
-		const supabase = await createClient();
+	async function onSubmit() {
 		try {
-			console.log(uploadResult);
-			const { successful } = uploadResult;
-			console.log(uploadResult);
+			const supabase = await createClient();
 			uploadResult.map(async (file: any) => {
 				const fileName = file?.name;
 				const extension = file?.extension;
@@ -144,103 +138,60 @@ const Upload = () => {
 				const fileUrl = file?.url;
 				const last_modified = file?.data.last_modified;
 
-				console.log(fileUrl);
-				const data = await supabase.from("Files").insert([{ posted_by: postedBy, url: fileUrl, last_modified: last_modified, file_name: fileName, type: type, preview: preview, size: size, extension: extension }]);
+				const response = await addNewFilesToDb({
+					fileName,
+					extension,
+					size,
+					preview,
+					type,
+					postedBy,
+					fileUrl,
+					last_modified
+				});
+				if (response?.error) {
+					customToastNotifier(toast, {
+						title: "Your file was uploaded, but could not be saved to the database",
+						variant: "destructive"
+					});
+				}
 
-				console.log(data);
+				return openUpload(false);
 			});
 		} catch (error) {
-			console.log(error);
+			customToastNotifier(toast, {
+				title: "Oops, An unexpected Error had occured!!",
+				variant: "destructive"
+			});
 		}
 	}
 
 	return (
 		<div className="bg-[#00000073] backdrop-blur-sm flex items-center justify-center absolute top-0 left-0 h-screen w-full z-10">
 			<div className="bg-white rounded-lg p-[1rem] flex  ">
-				<LucideSidebarClose />
+				<X
+					onClick={() => {
+						openUpload(false);
+					}}
+				/>
 
 				<div className="w-full">
 					<h1 className="text-[1rem] my-[.5rem]">Upload Files</h1>
 
 					<div id="drop-area" className="rounded-lg p-[1rem] flex gap-[2rem] items-center w-full">
-						{/* <div className="">
-              <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={handleClick}
-                className="w-[300px] h-[300px] border-2 border-dashed rounded-md border-gray-300 flex flex-col items-center justify-center"
-              >
-                <FolderUp size={100} color="#0f57ff" absoluteStrokeWidth />
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  onChange={handleFileChange}
-                  multiple
-                />
-                <div className="w-full">
-                  {" "}
-                  {files.map((file) => (
-                    <div
-                      key={file.name}
-                      className="flex items-center justify-between"
-                    >
-                      <p className="text-gray-600 text-sm truncate w-full pr-4">
-                        {file.name}
-                      </p>
-                      <div className="w-[150px] bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                        <div
-                          className="bg-blue-600 h-2.5 rounded-full"
-                          style={{
-                            width: `${uploadProgress[file.name] || 0}%`,
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div> */}
-						<Dashboard uppy={uppy} showProgressDetails={true}>
-							Hello
-						</Dashboard>
-						<div>
-							<Form {...form}>
-								<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-[.8rem] w-[500px]">
-									<FormField
-										control={form.control}
-										name="description"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Description</FormLabel>
-												<FormControl>
-													<Input className="w-full" placeholder="Description" {...field} />
-												</FormControl>
-												<FormMessage className="text-red-500" />
-											</FormItem>
-										)}
-									/>
-									<FormField
-										control={form.control}
-										name="category"
-										render={({ field }) => (
-											<FormItem>
-												<FormLabel>Category</FormLabel>
-												<FormControl>
-													<Input className="w-full" placeholder="Category" {...field} />
-												</FormControl>
-												<FormMessage className="text-red-500" />
-											</FormItem>
-										)}
-									/>
-									<Button className="bg-blue-500 text-center w-full text-white flex gap-[.7rem]" type="submit">
-										<UploadCloud />
-										Upload Image
-									</Button>
-								</form>
-							</Form>
-						</div>
+						<Dashboard uppy={uppy} showProgressDetails={true} />
+
+						<Button onClick={onSubmit} className="bg-blue-500 text-center w-full text-white flex gap-[.7rem]" type="submit">
+							{isLoading ? (
+								<div className="flex gap-2">
+									<Loader2 className="mr-2 h-4 w-4 animate-spin" /> Please Wait...
+								</div>
+							) : (
+								<>
+									<UploadCloud />
+									Upload Image
+								</>
+							)}
+						</Button>
 					</div>
 				</div>
 			</div>

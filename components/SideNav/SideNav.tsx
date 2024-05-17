@@ -46,7 +46,7 @@ const SideNav = () => {
 	};
 	return (
 		<>
-			<div className="h-full border-r-1 border-gray-50 relative overflow-hidden">
+			<div className="hidden sm:block h-full border-r-1 border-gray-50 relative overflow-hidden">
 				<div className="h-[100px] flex items-center p-[1rem] ">
 					<h1>
 						Upload <span className="text-blue-500">Master</span>
@@ -54,7 +54,7 @@ const SideNav = () => {
 				</div>
 
 				<div>
-					<div className="max-w-[90%]  mx-auto flex flex-col gap-[.9rem]">
+					<div className="max-w-[90%]   mx-auto flex flex-col gap-[.9rem]">
 						{NavConstant.map((item) => {
 							const isActive = item.path === path;
 							return (

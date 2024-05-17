@@ -16,7 +16,7 @@ export const NavConstant: INav[] = [
 	},
 
 	{
-		id: 2,
+		id: 3,
 		text: "Archives",
 		path: "/dashboard/archives",
 		icon: <CloudUpload size={20} color="#4d4d4d" />

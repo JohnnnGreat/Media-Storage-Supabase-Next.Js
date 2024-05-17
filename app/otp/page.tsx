@@ -4,17 +4,20 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/comp
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { customToastNotifier } from "@/utils/shared";
+import { useVerifyOtp } from "@/utils/tanstack/tanstackQueries";
 
 const Otp = () => {
 	const [value, setValue] = React.useState("");
 	const email = useSearchParams().get("email");
 	const { toast } = useToast();
 	const router = useRouter();
+
+	const { mutateAsync: verify, isPending, isError } = useVerifyOtp();
 
 	const verifyOtp = async () => {
 		try {
@@ -24,7 +27,7 @@ const Otp = () => {
 				return;
 			}
 
-			const { data, error } = await supabase.auth.verifyOtp({ email, token: value, type: "email" });
+			const { data, error } = await verify({ email, token: value });
 
 			if (error) {
 				setValue("");
@@ -34,10 +37,8 @@ const Otp = () => {
 			const addNewUser = await supabase.from("User").insert([{ email: email }]);
 			router.push("/dashboard");
 		} catch (error) {
-			console.log(error);
+			customToastNotifier(toast, { title: error?.message });
 		}
-
-		// Create User in Database
 	};
 
 	return (
@@ -69,7 +70,13 @@ const Otp = () => {
 					</InputOTPGroup>
 				</InputOTP>
 				<Button disabled={value.length < 6 && true} className="bg-blue-500 w-full text-white mt-[.7rem]" onClick={verifyOtp}>
-					Verify OTP
+					{isPending ? (
+						<div className="flex gap-2">
+							<Loader2 className="mr-2 h-4 w-4 animate-spin" /> Veriying, Please wait...
+						</div>
+					) : (
+						<>Verify</>
+					)}
 				</Button>
 			</div>
 		</div>
