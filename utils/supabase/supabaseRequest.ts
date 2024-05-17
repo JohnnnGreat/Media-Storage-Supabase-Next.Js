@@ -59,7 +59,7 @@ export const getAllUploadedFiles = async () => {
 		const {
 			data: { user }
 		} = await supabase.auth.getUser();
-		const { data, error } = await supabase.from("Files").select("*").eq("posted_by", user?.email);
+		const { data, error } = await supabase.from("Files").select("*").eq("posted_by", user?.email).order("created_at", { ascending: false });
 
 		return { data, error };
 	} catch (error) {

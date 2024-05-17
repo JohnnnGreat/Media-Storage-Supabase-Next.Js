@@ -34,51 +34,11 @@ const Upload = (props: any) => {
 
 	const [isDragOver, setIsDragOver] = useState(false);
 	const fileInputRef = useRef(null);
-	const [uploadResult, setUploadResult] = useState([]);
+	const [uploadResult, setUploadResult] = useState<any>([]);
 
 	const { mutateAsync: addNewFilesToDb, isPending: isLoading, isError } = useCreateNewFiles();
 
-	const handleDragOver = (e: any) => {
-		e.preventDefault();
-		setIsDragOver(true);
-	};
-
-	const handleDragLeave = () => {
-		setIsDragOver(false);
-	};
-
-	const handleDrop = (e: any) => {
-		e.preventDefault();
-		setIsDragOver(false);
-		handleFiles(e.dataTransfer.files);
-	};
-
-	const handleClick = () => {
-		fileInputRef?.current.click();
-	};
-
-	const handleFileChange = (e) => {
-		handleFiles(Array.from(e.target.files));
-	};
-
-	const [fileName, setFileName] = useState("");
-
-	const [files, setFiles] = useState<File[]>([]);
-	const [uploadProgress, setUploadProgress] = useState<{
-		[key: string]: number;
-	}>({});
-
-	const handleFiles = (newFiles: File[]) => {
-		setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-		newFiles.forEach((file) => {
-			setUploadProgress((prevProgress) => ({
-				...prevProgress,
-				[file.name]: 0
-			}));
-		});
-	};
-
-	const [userData, setUserData] = useState({});
+	const [userData, setUserData] = useState<any>({});
 	useEffect(() => {
 		(async function () {
 			const supabase = await createClient();
@@ -149,7 +109,7 @@ const Upload = (props: any) => {
 					last_modified
 				});
 				if (response?.error) {
-					customToastNotifier(toast, {
+					customToastNotifier("message", "error", toast, {
 						title: "Your file was uploaded, but could not be saved to the database",
 						variant: "destructive"
 					});
@@ -158,7 +118,7 @@ const Upload = (props: any) => {
 				return openUpload(false);
 			});
 		} catch (error) {
-			customToastNotifier(toast, {
+			customToastNotifier("message", "error", toast, {
 				title: "Oops, An unexpected Error had occured!!",
 				variant: "destructive"
 			});
