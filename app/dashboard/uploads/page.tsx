@@ -15,17 +15,18 @@ import { LoaderCircle } from "lucide-react";
 dayjs.extend(utc);
 const DashboardHome = () => {
 	const { data, isPending } = useGetAllUserUploadedFiles();
+	const userFiles = data as { data: any[] };
 	const [openUpload, setOpenUpload] = useState(false);
 
-	const videos = data?.data?.filter((item) => {
+	const videos = userFiles?.data?.filter((item) => {
 		return item.extension === "mp4";
 	});
 
-	const images = data?.data?.filter((item) => {
+	const images = userFiles?.data?.filter((item) => {
 		return item.extension === "jpg" || item.extension === "png";
 	});
 
-	const pdf = data?.data?.filter((item) => {
+	const pdf = userFiles?.data?.filter((item) => {
 		return item.extension === "pdf";
 	});
 

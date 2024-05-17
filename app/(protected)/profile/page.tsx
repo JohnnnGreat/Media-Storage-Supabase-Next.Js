@@ -1,9 +1,14 @@
 import React from "react";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useGetAllUserUploadedFiles } from "@/utils/tanstack/tanstackQueries";
+import { INewFile } from "@/components/types";
 
 const ProfilePage = () => {
+	type IData = {
+		data: INewFile[];
+	};
 	const { data, isPending } = useGetAllUserUploadedFiles();
+	const userFiles = data as { data: any[] };
 	return (
 		<div>
 			ProfilePage
@@ -19,7 +24,7 @@ const ProfilePage = () => {
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{data?.data?.map((item) => {
+						{userFiles?.data?.map((item: any) => {
 							return (
 								<TableRow>
 									<TableCell className="font-medium">INV001</TableCell>
