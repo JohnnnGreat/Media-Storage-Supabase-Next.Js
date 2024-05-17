@@ -10,9 +10,12 @@ import { Button } from "../ui/button";
 const SideNav = () => {
 	const path = usePathname();
 	const router = useRouter();
-	const [userData, setUserData] = useState(null);
+	const [userData, setUserData] = useState<{ email: string } | null>(null);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
-
+	interface UserData {
+		email: string;
+		[key: string]: any;
+	}
 	useEffect(() => {
 		(async function () {
 			const supabase = await createClient();
@@ -25,7 +28,7 @@ const SideNav = () => {
 			if (user) {
 				setIsAuthenticated(true);
 			}
-			setUserData(user);
+			setUserData(user as UserData);
 		})();
 	}, []);
 
