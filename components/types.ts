@@ -1,14 +1,14 @@
 import React from "react";
 
 export type INav = {
-	id: Number;
+	id: number;
 	text: string;
 	path: string;
 	icon: React.ReactNode;
 };
 
 export type IFileDetails = {
-	id: Number;
+	id: number;
 	imageUrl: string;
 	extenstion: string;
 	fileName: string;
