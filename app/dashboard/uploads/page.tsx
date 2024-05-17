@@ -39,7 +39,6 @@ const DashboardHome = () => {
 		})();
 	}, []);
 
-	const [files, setFiles] = useState(data?.data);
 	const downloadFile = async (fileUrl: string, fileName: string) => {
 		try {
 			const response = await fetch(fileUrl);
@@ -50,7 +49,7 @@ const DashboardHome = () => {
 		}
 	};
 
-	const formatFileSize = (size: unknown) => {
+	const formatFileSize = (size: number) => {
 		const units = ["B", "KB", "MB", "GB", "TB"];
 		let i = 0;
 		while (size >= 1024 && i < units.length - 1) {
@@ -96,7 +95,7 @@ const DashboardHome = () => {
 						</TabsList>
 						<TabsContent className="w-full" value="all">
 							<div className="flex flex-wrap items-center  gap-[1rem]">
-								{data?.data?.map((file: { url: string; file_name: string; created_at: string; extension: string }) => {
+								{userFiles?.data?.map((file: { url: string; file_name: string; created_at: string; extension: string }) => {
 									return (
 										<div className="w-[300px]  p-[.6rem] border border-[1px] border-gray-300 rounded-lg">
 											{file?.extension === "mp3" && (
@@ -160,7 +159,7 @@ const DashboardHome = () => {
 						</TabsContent>
 						<TabsContent value="images">
 							<div className="flex flex-wrap items-center gap-[1rem]">
-								{images.map((file: { url: string; file_name: string; created_at: string; extension: string }) => {
+								{images.map((file: { size: number; url: string; file_name: string; created_at: string; extension: string }) => {
 									return (
 										<div className="w-[300px]  p-[.6rem] border border-[1px] border-gray-300 rounded-lg">
 											<img src={file?.url} className="w-full h-[200px] object-cover rounded-md" />
