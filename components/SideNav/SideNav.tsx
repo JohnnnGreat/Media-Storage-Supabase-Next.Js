@@ -46,7 +46,7 @@ const SideNav = () => {
 	};
 	return (
 		<>
-			<div className="hidden sm:block h-full border-r-1 border-gray-50 relative overflow-hidden">
+			<div className="hidden sm:block h-full border-r border-gray-200 border-gray-50 relative overflow-hidden">
 				<div className="h-[100px] flex items-center p-[1rem] ">
 					<h1>
 						Upload <span className="text-blue-500">Master</span>

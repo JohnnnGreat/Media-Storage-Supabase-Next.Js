@@ -1,31 +1,44 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useDeleteFiles, useGetAllUserUploadedFiles } from "@/utils/tanstack/tanstackQueries";
 import { INewFile } from "@/components/types";
 import { Button } from "@/components/ui/button";
-import { formatFileSize } from "@/utils/shared";
+import { customToastNotifier, formatFileSize } from "@/utils/shared";
 import { createClient } from "@/utils/supabase/client";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import { Loader2 } from "lucide-react";
+import { message } from "antd";
 
+dayjs.extend(utc);
 const ProfilePage = () => {
 	const { mutateAsync: deleteFileFromDb, isPending: isDeletingFile } = useDeleteFiles();
 	type IData = {
 		data: INewFile[];
 	};
 	const { data, isPending } = useGetAllUserUploadedFiles();
+	const [deletingFileId, setDeletingFileId] = useState("");
 
 	const userFiles = data as { data: any[] };
 
 	const deleteFile = async (fileId: string) => {
+		setDeletingFileId(fileId);
 		try {
-			const response = await deleteFile(fileId);
-			console.log(response);
+			const response = await deleteFileFromDb(fileId);
+			return customToastNotifier("message", "success", message, { title: "File Deleted" });
 		} catch (error) {}
 	};
 
+	const formatDate = (dateString: string) => {
+		const date = dayjs(dateString).utc();
+		return date.format("MMM D, YYYY - h:mm:ss A");
+	};
 	return (
 		<div className="h-[100vh] p-[1rem]">
-			<div className="h-[300] border-b-2"></div>
+			<div className="h-[100px] border-b-2">
+				<h1 className="text-[3rem] font-semibold">My Profile</h1>
+			</div>
 
 			<div className="overflow-y-auto h-full custom-scrollbar">
 				<Table>
@@ -50,14 +63,22 @@ const ProfilePage = () => {
 									</TableCell>
 									<TableCell className="text-[.8rem] w-[50px !important]">{item?.file_name}</TableCell>
 									<TableCell>{formatFileSize(item?.size)}</TableCell>
-									<TableCell className="text-right">{item.created_at}</TableCell>
+
+									<TableCell className="text-right">{formatDate(item?.created_at)}</TableCell>
 									<TableCell className="text-right">{item.type}</TableCell>
 									<TableCell className="text-right">{item.extension}</TableCell>
 									<TableCell className="text-right flex gap-[.9rem]">
-										<Button className="bg-red-500 rounded-e-md text-white" onClick={() => deleteFile(item.id)}>
-											Delete
-										</Button>
-										<Button>View File</Button>
+										{isDeletingFile && deletingFileId === item.id ? (
+											<>
+												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+											</>
+										) : (
+											<Button className="bg-red-500 rounded-e-md text-white" onClick={() => deleteFile(item.id)}>
+												Delete
+											</Button>
+										)}
+
+										<Button className="border rounded-e-md text-gray text-[.9rem]">View File</Button>
 									</TableCell>
 								</TableRow>
 							);
