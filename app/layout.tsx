@@ -3,7 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import SideNav from "@/components/SideNav/SideNav";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -28,12 +28,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 	}, []);
 	return (
 		<QueryClientProvider client={queryClient}>
-			<html lang="en" className={GeistSans.className}>
-				<body className={"bg-background text-foreground w-full h-screen overflow-hidden"}>
-					<main className="min-h-screen flex flex-col items-center">{children}</main>
-					<Toaster />
-				</body>
-			</html>
+			<Suspense fallback="..loading">
+				<html lang="en" className={GeistSans.className}>
+					<body className={"bg-background text-foreground w-full h-screen overflow-hidden"}>
+						<main className="min-h-screen flex flex-col items-center">{children}</main>
+						<Toaster />
+					</body>
+				</html>
+			</Suspense>
 		</QueryClientProvider>
 	);
 }
