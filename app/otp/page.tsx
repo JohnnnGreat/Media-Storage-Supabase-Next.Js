@@ -85,7 +85,7 @@ const Otp = () => {
 	};
 
 	return (
-		<Suspens fallback="..loading">
+		<Suspense fallback="..loading">
 			<div className="h-screen w-full flex items-center justify-center">
 				<div className="absolute top-0 w-[1200px] mx-auto flex justify-between items-center h-[80px]">
 					<Link href="/" className="flex items-center justify-center gap-2 p-[.5rem] px-[.8rem] hover:bg-slate-100 transition-all rounded-md">
@@ -137,7 +137,7 @@ const Otp = () => {
 					</Button>
 				</div>
 			</div>
-		</Suspens>
+		</Suspense>
 	);
 };
 
