@@ -20,10 +20,10 @@ const DashobardLayout = ({ children }: { children: React.ReactNode }) => {
 			<div className="overflow-scroll">{children}</div>
 			<footer className=" sm:hidden w-full p-[.8rem] absolute bottom-0 bg-white">
 				<div className="w-full  mx-auto flex gap-[.9rem] justify-between">
-					{NavConstant.map((item) => {
+					{NavConstant.map((item, index) => {
 						const isActive = item.path === path;
 						return (
-							<Link className={`flex flex-col items-center justify-between gap-[.7rem] text-gray-500 p-[.8rem] rounded-md ${isActive ? "bg-blue-500 text-white" : ""}`} href={`${item.path}`} key={item.id}>
+							<Link className={`flex flex-col items-center justify-between gap-[.7rem] text-gray-500 p-[.8rem] rounded-md ${isActive ? "bg-blue-500 text-white" : ""}`} href={`${item.path}`} key={index}>
 								{item.icon}
 								<p className="text-[.8rem]">{item.text}</p>
 							</Link>
