@@ -15,6 +15,7 @@ import { toast, useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
 import { useSignUpUser } from "@/utils/tanstack/tanstackQueries";
 import { customToastNotifier } from "@/utils/shared";
+import { message } from "antd";
 
 const Register: React.FC = () => {
 	const router = useRouter();
@@ -32,7 +33,7 @@ const Register: React.FC = () => {
 			const userIsSignedIn = await signInUserWithOtp(values);
 
 			if (userIsSignedIn) {
-				customToastNotifier(toast, { title: "An Otp have been sentd to your email" });
+				customToastNotifier("message", "success", message, { title: "An Otp have been sentd to your email" });
 				return router.push(`/otp?email=${values?.email}`);
 			}
 		} catch (error: any) {

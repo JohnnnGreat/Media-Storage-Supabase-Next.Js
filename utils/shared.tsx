@@ -1,8 +1,18 @@
 import { ToastType } from "@/components/types";
 import { ZodStringCheck } from "zod";
 
-export const customToastNotifier = (toast: Function, { title, description, variant }: ToastType) => {
-	return toast({ title: title, description: description, variant: variant });
+export const customToastNotifier = (type: string, value: string, trigger: any, { title, description, variant }: ToastType) => {
+	if (type === "message") {
+		if (value === "success") {
+			return trigger.success(title);
+		} else {
+			return trigger.error(title);
+		}
+	} else if (type === "toast") {
+		return trigger({ title: title, description: description, variant: variant });
+	}
+
+	return;
 };
 
 export const formatFileSize = (size: number) => {

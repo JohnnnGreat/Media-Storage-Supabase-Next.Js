@@ -3,6 +3,23 @@ module.exports = {
 	content: ["./app/**/*.{js,ts,jsx,tsx,mdx}", "./components/**/*.{js,ts,jsx,tsx,mdx}"],
 	theme: {
 		extend: {
+			scrollbar: {
+				custom: {
+					width: "12px",
+					track: {
+						background: "#f1f1f1"
+					},
+					thumb: {
+						background: "#888",
+						rounded: "md"
+					},
+					hover: {
+						thumb: {
+							background: "#555"
+						}
+					}
+				}
+			},
 			colors: {
 				background: "hsl(var(--background))",
 				foreground: "hsl(var(--foreground))",

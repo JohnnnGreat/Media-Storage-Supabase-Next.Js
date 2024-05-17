@@ -36,14 +36,20 @@ export const signInUserWithOtp = async (user: IUser) => {
 	}
 };
 
-export const verifyOtp = async ({ email, token }: IVerifyToken) => {
+export const verifyOtp = async ({
+	email,
+	token
+}: IVerifyToken): Promise<{
+	data: {} | null;
+	error: Error | null;
+}> => {
 	try {
 		const supabase = await createClient();
 		const { data, error } = await supabase.auth.verifyOtp({ email, token: token, type: "email" });
 
 		return { data, error };
 	} catch (error) {
-		return error;
+		throw new Error();
 	}
 };
 
@@ -81,5 +87,20 @@ export const createNewFiles = async (values: INewFile) => {
 		return addNewUser;
 	} catch (error) {
 		console.log(error);
+	}
+};
+
+export const deleteFile = async (fileId: string) => {
+	const supabase = await createClient();
+	try {
+		const { data, error } = await supabase.from("Files").delete().eq("id", fileId);
+		console.log(data, error);
+		if (error) {
+			return false;
+		} else {
+			return true;
+		}
+	} catch (error) {
+		return error;
 	}
 };

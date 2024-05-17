@@ -60,7 +60,7 @@ const SideNav = () => {
 							return (
 								<Link className={`flex items-center gap-[.7rem] text-gray-500 p-[.8rem] rounded-md ${isActive ? "bg-blue-500 text-white" : ""}`} href={`${item.path}`} key={item.id}>
 									{item.icon}
-									<p>{item.text}</p>
+									<p className="text-[.8rem]">{item.text}</p>
 								</Link>
 							);
 						})}

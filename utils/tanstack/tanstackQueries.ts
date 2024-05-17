@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
-import { createNewFiles, getAllUploadedFiles, signInUserWithOtp, verifyOtp } from "../supabase/supabaseRequest";
+import { createNewFiles, deleteFile, getAllUploadedFiles, signInUserWithOtp, verifyOtp } from "../supabase/supabaseRequest";
 import { INewFile, IUser, IVerifyToken } from "@/components/types";
 
 export const useSignUpUser = () => {
@@ -25,6 +25,19 @@ export const useCreateNewFiles = () => {
 		onSuccess: () => {
 			console.log("success");
 			queryClient.invalidateQueries({
+				queryKey: ["getUserFilesUploaded"]
+			});
+		}
+	});
+};
+
+export const useDeleteFiles = () => {
+	const QueryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (fileId: string) => deleteFile(fileId),
+		onSuccess: () => {
+			QueryClient.invalidateQueries({
 				queryKey: ["getUserFilesUploaded"]
 			});
 		}
