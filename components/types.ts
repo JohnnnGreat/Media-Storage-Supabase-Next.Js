@@ -17,7 +17,7 @@ export type IFileDetails = {
 };
 
 export type IUser = {
-	email: string | null;
+	email?: any;
 };
 
 export type ToastType = {

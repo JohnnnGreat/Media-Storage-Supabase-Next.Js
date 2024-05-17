@@ -23,7 +23,7 @@ export const signInUserWithOtp = async (user: IUser) => {
 		const supabase = await createClient();
 
 		const { data, error } = await supabase.auth.signInWithOtp({
-			email: user.email
+			email: user?.email
 		});
 		console.log(data);
 		if (error) {
