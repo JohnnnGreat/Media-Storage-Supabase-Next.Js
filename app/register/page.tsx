@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,8 +24,14 @@ import { Loader2 } from "lucide-react";
 import { useSignUpUser } from "@/utils/tanstack/tanstackQueries";
 import { customToastNotifier } from "@/utils/shared";
 import { message } from "antd";
+import { getCurrentSession } from "@/utils/supabase/supabaseRequest";
 
 const Register: React.FC = () => {
+	useEffect(() => {
+		getCurrentSession().then((value: any) => {
+			if (value) window.location.href = "/";
+		});
+	}, []);
 	const router = useRouter();
 	const { toast } = useToast();
 	const {
@@ -57,16 +63,13 @@ const Register: React.FC = () => {
 			toast({ title: "An Error had Occured, Please try again" });
 		}
 	}
-
+	console.log(process.env.development);
 	const handleGoogleSubmit = async () => {
 		try {
 			const supabase = await createClient();
 
 			const response = await supabase.auth.signInWithOAuth({
-				provider: "google",
-				options: {
-					redirectTo: `http://example.com/auth/callback`
-				}
+				provider: "google"
 			});
 		} catch (error) {}
 	};
@@ -127,7 +130,7 @@ const Register: React.FC = () => {
 						) : (
 							<>
 								<>
-									<Mail className="mr-2 h-4 w-4" /> Send me Login Code
+									<Mail className="mr-2 h-4 w-4" /> Google
 								</>
 							</>
 						)}

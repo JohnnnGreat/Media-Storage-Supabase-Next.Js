@@ -35,19 +35,24 @@ const Home = () => {
 		return item.extension === "jpg" || item.extension === "png";
 	});
 	const pdf = userFiles?.data?.filter((item) => {
-		return item.extension === "pdf";
+		return item.extension === "pdf" || item.extension === "docs";
+	});
+
+	const doc = userFiles?.data?.filter((item) => {
+		return item.extension === "mp3";
 	});
 
 	const dataSetFiles = {
-		labels: ["All", "Images", "PDF"],
+		labels: ["All", "Images", "PDF", "Audio"],
 		datasets: [
 			{
 				label: "Uploaded Files Statistics",
-				data: [userFiles?.data?.length, images?.length, pdf?.length],
+				data: [userFiles?.data?.length, images?.length, pdf?.length, doc?.length],
 				backgroundColor: [
 					"rgb(255, 99, 132)",
 					"rgb(54, 162, 235)",
-					"rgb(255, 205, 86)"
+					"rgb(255, 205, 86)",
+					"rgb(19, 195, 207)"
 				],
 				hoverOffset: 2
 			}

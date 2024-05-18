@@ -33,6 +33,8 @@ const DashboardHome = () => {
 		return item.extension === "pdf";
 	});
 
+	
+
 	useEffect(() => {
 		(async function () {
 			const supabase = await createClient();
