@@ -1,7 +1,18 @@
 "use client";
-import React, { useState } from "react";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useDeleteFiles, useGetAllUserUploadedFiles } from "@/utils/tanstack/tanstackQueries";
+import React, { useEffect, useState } from "react";
+import {
+	Table,
+	TableBody,
+	TableCaption,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow
+} from "@/components/ui/table";
+import {
+	useDeleteFiles,
+	useGetAllUserUploadedFiles
+} from "@/utils/tanstack/tanstackQueries";
 import { INewFile } from "@/components/types";
 import { Button } from "@/components/ui/button";
 import { customToastNotifier, formatFileSize } from "@/utils/shared";
@@ -13,7 +24,8 @@ import { message } from "antd";
 
 dayjs.extend(utc);
 const ProfilePage = () => {
-	const { mutateAsync: deleteFileFromDb, isPending: isDeletingFile } = useDeleteFiles();
+	const { mutateAsync: deleteFileFromDb, isPending: isDeletingFile } =
+		useDeleteFiles();
 	type IData = {
 		data: INewFile[];
 	};
@@ -21,13 +33,36 @@ const ProfilePage = () => {
 	const [deletingFileId, setDeletingFileId] = useState("");
 
 	const userFiles = data as { data: any[] };
+	const [userData, setUserData] = useState<{ email: string } | null>(null);
+	interface UserData {
+		email: string;
+		[key: string]: any;
+	}
+
+	useEffect(() => {
+		(async function () {
+			const supabase = await createClient();
+
+			const {
+				data: { user }
+			} = await supabase.auth.getUser();
+
+			console.log(user);
+
+			setUserData(user as UserData);
+		})();
+	}, []);
 
 	const deleteFile = async (fileId: string) => {
 		setDeletingFileId(fileId);
 		try {
 			const response = await deleteFileFromDb(fileId);
-			return customToastNotifier("message", "success", message, { title: "File Deleted" });
-		} catch (error) {}
+			return customToastNotifier("message", "success", message, {
+				title: "File Deleted"
+			});
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	const formatDate = (dateString: string) => {
@@ -37,12 +72,12 @@ const ProfilePage = () => {
 	return (
 		<div className="h-[100vh] p-[1rem]">
 			<div className="h-[100px] border-b-2">
-				<h1 className="text-[3rem] font-semibold">My Profile</h1>
+				<h1 className="text-[2rem] font-semibold">My Profile</h1>
 			</div>
 
 			<div className="overflow-y-auto h-full r">
-				<h1>Added Files</h1>
-				<Table>
+				<h1 className="text-[1.4rem] font-semibold my-[1rem]">Added Files</h1>
+				<Table className="py-[1rem]">
 					<TableCaption>Loading Added Files, Please wait...</TableCaption>
 					<TableHeader>
 						<TableRow>
@@ -60,26 +95,41 @@ const ProfilePage = () => {
 							return (
 								<TableRow className=" text-gray-500">
 									<TableCell className="font-medium">
-										<img className="w-[50px] h-[50px] object-cover rounded-full" src={item?.url} alt="text" />
+										<img
+											className="w-[50px] h-[50px] object-cover rounded-full"
+											src={item?.url}
+											alt="text"
+										/>
 									</TableCell>
-									<TableCell className="text-[.7rem] w-[50px !important]">{item?.file_name}</TableCell>
+									<TableCell className="text-[.7rem] w-[50px !important]">
+										{item?.file_name}
+									</TableCell>
 									<TableCell>{formatFileSize(item?.size)}</TableCell>
 
-									<TableCell className="text-right text-[.7rem]">{formatDate(item?.created_at)}</TableCell>
+									<TableCell className="text-right text-[.7rem]">
+										{formatDate(item?.created_at)}
+									</TableCell>
 									<TableCell className="text-right text-[.7rem]">{item.type}</TableCell>
-									<TableCell className="text-right text-[.7rem]">{item.extension}</TableCell>
-									<TableCell className="text-right text-[.7rem] flex gap-[.9rem]">
+									<TableCell className="text-right text-[.7rem]">
+										{item.extension}
+									</TableCell>
+									<TableCell className="text-right text-[.7rem] flex gap-[.9rem] h-full flex items-center justify-center">
 										{isDeletingFile && deletingFileId === item.id ? (
 											<>
 												<Loader2 className="mr-2 h-4 w-4 animate-spin" /> Deleting...
 											</>
 										) : (
-											<Button className="bg-red-500 rounded-e-md text-white" onClick={() => deleteFile(item.id)}>
+											<Button
+												className="bg-red-500 rounded-e-md text-white"
+												onClick={() => deleteFile(item.id)}
+											>
 												Delete
 											</Button>
 										)}
 
-										<Button className="border rounded-e-md text-gray text-[.9rem]">View File</Button>
+										<Button className="border rounded-e-md text-gray text-[.9rem]">
+											View File
+										</Button>
 									</TableCell>
 								</TableRow>
 							);

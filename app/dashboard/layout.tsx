@@ -11,7 +11,7 @@ const DashobardLayout = ({ children }: { children: React.ReactNode }) => {
 	const path = usePathname();
 	useEffect(() => {
 		getCurrentSession().then((value: any) => {
-			// if (!value) window.location.href = "/register";
+			if (!value) window.location.href = "/register";
 		});
 	}, []);
 	return (

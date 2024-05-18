@@ -34,6 +34,26 @@
 	}
 }
 
+.uppy-Container {
+	width: 100%;
+	height: fit-content;
+}
+
+.uppy-Dashboard-inner {
+	height: 100% !important;
+}
+
+.grid-hero {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 1rem;
+}
+@media (max-width: 640px) {
+	.grid {
+		grid-template-columns: 1fr;
+	}
+}
+
 .bg-nav-dialog {
 	position: absolute;
 	top: 0;
@@ -79,4 +99,7 @@
 
 .uppy-Dashboard-poweredBy {
 	display: none !important;
+}
+
+.uppy-Root {
 }

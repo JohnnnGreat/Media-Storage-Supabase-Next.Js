@@ -3,6 +3,6 @@
 	"tabWidth": 1,
 	"useTabs": true,
 	"singleQuote": false,
-	"printWidth": 400,
+
 	"bracketSpacing": true
 }
