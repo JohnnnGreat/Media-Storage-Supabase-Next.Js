@@ -11,12 +11,17 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useGetAllUserUploadedFiles } from "@/utils/tanstack/tanstackQueries";
 import { FileMinus, FileText, LoaderCircle } from "lucide-react";
-import { formatFileSize } from "@/utils/shared";
+import { customToastNotifier, formatFileSize } from "@/utils/shared";
 import Head from "next/head";
+import { useRouter } from "next/navigation";
+import { toast, useToast } from "@/components/ui/use-toast";
+import { message } from "antd";
 
 dayjs.extend(utc);
 
 const DashboardHome = () => {
+	const router = useRouter();
+
 	const { data, isPending } = useGetAllUserUploadedFiles();
 	const userFiles = data as { data: any[] };
 	const [openUpload, setOpenUpload] = useState(false);
@@ -32,8 +37,6 @@ const DashboardHome = () => {
 	const pdf = userFiles?.data?.filter((item) => {
 		return item.extension === "pdf";
 	});
-
-	
 
 	useEffect(() => {
 		(async function () {
@@ -59,6 +62,26 @@ const DashboardHome = () => {
 		return date.format("MMM D, YYYY - h:mm:ss A");
 	};
 
+	const [searchInput, setSearchInput] = useState("");
+	const handleSearchFile = async (e: any) => {
+		const value = e.target.value;
+		setSearchInput(value);
+
+		// Handle auto complete
+		try {
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const handleSearchFunction = () => {
+		if (!searchInput) {
+			return customToastNotifier("message", "error", message, {
+				title: "Input value cant be empty"
+			});
+		}
+		return router.push(`/dashboard/search?query=${searchInput}`);
+	};
 	return (
 		<>
 			<Head>
@@ -70,18 +93,26 @@ const DashboardHome = () => {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<div className="p-[1rem] w-full">
-				<div className="h-[100px] w-full flex items-center">
-					<Input type="text" placeholder="Enter a file name" className="w-[80%]" />
+				<div className="h-[100px] w-full flex items-center gap-[1rem]">
+					<Input
+						type="text"
+						placeholder="Enter a file name"
+						className="w-[80%]"
+						onChange={handleSearchFile}
+					/>
 
-					<Button
-						onClick={() => {
-							setOpenUpload(true);
-						}}
-					>
-						Upload a File
+					<Button className="border" onClick={handleSearchFunction}>
+						Search
 					</Button>
 				</div>
-
+				<Button
+					className="text-blue bg-blue-500 text-white"
+					onClick={() => {
+						setOpenUpload(true);
+					}}
+				>
+					Upload a File
+				</Button>
 				{openUpload && <Upload openUpload={setOpenUpload} />}
 				{isPending ? (
 					<div className="w-full h-full flex items-center justify-center">

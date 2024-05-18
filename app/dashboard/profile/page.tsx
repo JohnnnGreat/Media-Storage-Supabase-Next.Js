@@ -82,10 +82,10 @@ const ProfilePage = () => {
 					<TableHeader>
 						<TableRow>
 							<TableHead className="w-[70px] text-[.9rem]">Image</TableHead>
-							<TableHead className="w-[100px] overflow-hidden">File Name</TableHead>
+							<TableHead className="w-[80px] overflow-hidden">File Name</TableHead>
 							<TableHead>Size</TableHead>
 							<TableHead>Date Created</TableHead>
-							<TableHead>Type</TableHead>
+
 							<TableHead className="text-right">Extension</TableHead>
 							<TableHead>Action</TableHead>
 						</TableRow>
@@ -109,7 +109,7 @@ const ProfilePage = () => {
 									<TableCell className="text-right text-[.7rem]">
 										{formatDate(item?.created_at)}
 									</TableCell>
-									<TableCell className="text-right text-[.7rem]">{item.type}</TableCell>
+									{/* <TableCell className="text-right text-[.7rem]">{item.type}</TableCell> */}
 									<TableCell className="text-right text-[.7rem]">
 										{item.extension}
 									</TableCell>

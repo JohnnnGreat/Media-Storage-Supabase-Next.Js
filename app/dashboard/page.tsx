@@ -168,7 +168,7 @@ const Home = () => {
 
 	return (
 		<div className="w-full p-[1rem]">
-			<div style={{ width: "40%" }} className=" flex">
+			<div className="flex items-center flex-col md:flex-row w-full md:w-[36%]">
 				<Doughnut
 					className="w-[100px !important]"
 					data={dataSetFiles}

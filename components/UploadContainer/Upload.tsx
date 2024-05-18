@@ -74,20 +74,45 @@ const Upload = (props: any) => {
 	const bucketName = "files";
 	const folderName = "Random";
 
+	async function fileExists(fileName: string, folderName: string) {
+		const supabase = await createClient();
+		const { data, error } = await supabase.storage
+			.from("files")
+			.list(folderName, {
+				limit: 1,
+				offset: 0,
+				search: fileName
+			});
+		console.log(data, error);
+		if (error) {
+			console.error("Error checking file existence:", error);
+			return false;
+		}
+
+		return data.length > 0;
+	}
+
 	uppy.use(Tus, TusConfigs);
-	uppy.on("file-added", (file) => {
-		const fileName = `${Date.now()}`;
+	uppy.on("file-added", async (file) => {
+		// const fileName = `${Date.now()}`;
+
+		// if (await fileExists(fileName, folderName)) {
+		// 	uppy.removeFile(file.id);
+		// 	customToastNotifier("message", "error", toast, {
+		// 		title: "File already exists. Please choose a different file.",
+		// 		variant: "destructive"
+		// 	});
+		// 	return;
+		// }
 		file.meta = {
 			...file.meta,
 			bucketName: bucketName,
-			objectName: folderName ? `${folderName}/${fileName}` : fileName,
+			objectName: folderName
+				? `${folderName}/${file.name.trim()}`
+				: file.name.trim(),
 			contentType: file.type
 		};
 	});
-
-	// uppy.on("upload", () => {
-	// 	setIsUploadingToStorage(true);
-	// });
 
 	uppy.on("complete", (result: any) => {
 		setUploadResult([]);
@@ -98,6 +123,7 @@ const Upload = (props: any) => {
 			);
 
 			result.successful.map(async (file: any) => {
+				console.log(file);
 				const fileUrl = `https://${
 					process.env.NEXT_PUBLIC_SUPABASE_PROJECT_ID as string
 				}.supabase.co/storage/v1/object/public/files/${file?.meta?.objectName}`;
@@ -137,55 +163,19 @@ const Upload = (props: any) => {
 		}
 	});
 
-	async function onSubmit() {
-		try {
-			const supabase = await createClient();
-			uploadResult.map(async (file: any) => {
-				const fileName = file?.name;
-				const extension = file?.extension;
-				const size = file?.size;
-				const preview = file?.preview;
-				const type = file?.data.type;
-				const postedBy = userData?.email;
-				const fileUrl = file?.url;
-				const last_modified = file?.data.last_modified;
-
-				const response = await addNewFilesToDb({
-					fileName,
-					extension,
-					size,
-					preview,
-					type,
-					postedBy,
-					fileUrl,
-					last_modified
-				});
-				if (response?.error) {
-					customToastNotifier("message", "error", toast, {
-						title: "Your file was uploaded, but could not be saved to the database",
-						variant: "destructive"
-					});
-				}
-			});
-		} catch (error) {
-			customToastNotifier("message", "error", toast, {
-				title: "Oops, An unexpected Error had occured!!",
-				variant: "destructive"
-			});
-		}
-	}
-
 	return (
 		<div className="bg-[#00000073] backdrop-blur-sm flex items-center p-[1rem] justify-center absolute top-0 left-0 h-screen w-full z-10">
-			<div className="bg-white rounded-lg p-[2rem] flex w-full md:w-[700px] overflow-auto  ">
+			<div className="bg-white rounded-lg p-[2rem] flex w-full md:w-[700px] overflow-auto relative  ">
 				<X
+					className="absolute top-[2rem] right-[2rem] cursor-pointer"
+					size={34}
 					onClick={() => {
 						openUpload(false);
 					}}
 				/>
 
 				<div className="w-full">
-					<h1 className="text-[1rem] my-[.5rem]">Upload Files</h1>
+					<h1 className="text-[1rem] my-[.5rem] font-bold">Upload Files</h1>
 
 					<div
 						id="drop-area"

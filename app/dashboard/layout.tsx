@@ -17,15 +17,22 @@ const DashobardLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
 		<div className="bg-background text-foreground w-full h-screen overflow-hidden grid grid-tem-nav">
 			<SideNav />
+			<header className="sm:hidden p-[1rem]">FileUp</header>
 			<div className="overflow-scroll">{children}</div>
 			<footer className=" sm:hidden w-full p-[.8rem] absolute bottom-0 bg-white">
 				<div className="w-full  mx-auto flex gap-[.9rem] justify-between">
 					{NavConstant.map((item, index) => {
 						const isActive = item.path === path;
 						return (
-							<Link className={`flex flex-col items-center justify-between gap-[.7rem] text-gray-500 p-[.8rem] rounded-md ${isActive ? "bg-blue-500 text-white" : ""}`} href={`${item.path}`} key={index}>
+							<Link
+								className={`flex flex-col items-center justify-between gap-[.7rem] text-gray-500 p-[.8rem] rounded-md ${
+									isActive ? "bg-blue-500 text-white" : ""
+								}`}
+								href={`${item.path}`}
+								key={index}
+							>
 								{item.icon}
-								<p className="text-[.8rem]">{item.text}</p>
+								<p className="text-[.8rem] hidden md:inline-block">{item.text}</p>
 							</Link>
 						);
 					})}

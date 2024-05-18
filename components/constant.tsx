@@ -1,4 +1,10 @@
-import { CloudUpload, FolderArchive, Home, User } from "lucide-react";
+import {
+	CloudUpload,
+	FolderArchive,
+	Home,
+	SearchIcon,
+	User
+} from "lucide-react";
 import { IFileDetails, INav } from "./types";
 
 export const NavConstant: INav[] = [
@@ -26,6 +32,12 @@ export const NavConstant: INav[] = [
 		text: "Profile",
 		path: "/dashboard/profile",
 		icon: <User size={18} color="#4d4d4d" />
+	},
+	{
+		id: 5,
+		text: "Search",
+		path: "/dashboard/search",
+		icon: <SearchIcon size={18} color="#4d4d4d" />
 	}
 ];
 
